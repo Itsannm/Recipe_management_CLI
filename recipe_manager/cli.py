@@ -55,6 +55,8 @@ def add_recipe(title, instructions, ingredients):
     session.commit()
     session.close()
 
+    click.echo(f"Recipe '{title}' added successfully!")
+
 @click.command()
 @click.option('--recipe_id', prompt='Recipe ID to delete', help='ID of the recipe to delete')
 def delete_recipe(recipe_id):
@@ -72,6 +74,8 @@ def delete_recipe(recipe_id):
         click.echo(f"No recipe found with ID {recipe_id}.")
     
     session.close()
+
+    click.echo(f"Recipe deleted successfully!")
 
 if __name__ == '__main__':
     # Add the commands to the CLI interface
