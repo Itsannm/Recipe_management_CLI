@@ -117,28 +117,50 @@ def edit_recipe(recipe_id, title, instructions, ingredients):
     click.echo(f"Recipe with ID {recipe_id} edited successfully!")
 
 #@click.command()
-@click.option('--query', prompt='Search query', help='Keyword to search for in recipe titles and tags')
+@click.option('--query', prompt='Search query', help='Keyword to search for in recipe titles')
 def search_recipes(query):
-    """Search for recipes by title and tags."""
+    """Search for recipes by title."""
     session = Session()
     
-    # Find recipes with titles or tags matching the query
+    # Find recipes with titles matching the query
     recipes = session.query(Recipe).filter(
         Recipe.title.ilike(f'%{query}%') |
-        Recipe.tags.any(Ingredient.name.ilike(f'%{query}%'))
-    ).all()
-    
+            
     if recipes:
         click.echo("Search results:")
         for recipe in recipes:
             click.echo(f"Recipe ID: {recipe.id}")
             click.echo(f"Title: {recipe.title}")
             click.echo(f"Instructions: {recipe.instructions}")
-            if recipe.tags:
-                click.echo(f"Tags: {', '.join(tag.name for tag in recipe.tags)}")
             click.echo('-' * 30)
     else:
         click.echo("No matching recipes found.")
+    
+    session.close()
+
+@click.command()
+@click.option('--recipe_id', prompt='Recipe ID to view', help='ID of the recipe to view')
+def view_recipe(recipe_id):
+    """View detailed information about a recipe by its ID."""
+    session = Session()
+    
+    # Find the recipe by ID
+    recipe = session.query(Recipe).filter_by(id=recipe_id).first()
+    
+    if not recipe:
+        click.echo(f"No recipe found with ID {recipe_id}.")
+        session.close()
+        return
+    
+    click.echo(f"Recipe ID: {recipe.id}")
+    click.echo(f"Title: {recipe.title}")
+    click.echo(f"Instructions: {recipe.instructions}")
+    
+    if recipe.ingredients:
+        click.echo("Ingredients:")
+        for ingredient in recipe.ingredients:
+            click.echo(f"- {ingredient.name}")
+    
     
     session.close()
 
@@ -148,4 +170,5 @@ if __name__ == '__main__':
     list_recipes()
     delete_recipe()
     edit_recipe()
-    search_recipes() 
+    search_recipes()
+    view_recipe()
