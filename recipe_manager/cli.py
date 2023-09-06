@@ -11,7 +11,11 @@ DATABASE_URL = 'sqlite:///recipe_manager.db'
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
-@click.command()
+@click.group()
+def cli():
+    """Recipe Manager CLI"""
+
+@cli.command()
 def list_recipes():
     """List all recipes."""
     session = Session()
@@ -28,7 +32,7 @@ def list_recipes():
     
     session.close()
 
-@click.command()
+@cli.command()
 @click.option('--title', prompt='Title of the recipe', help='Title of the recipe')
 @click.option('--instructions', prompt='Recipe instructions', help='Instructions for the recipe')
 @click.option('--ingredients', prompt='Recipe ingredients (comma-separated)', help='Ingredients for the recipe')
@@ -60,7 +64,7 @@ def add_recipe(title, instructions, ingredients):
     
     click.echo(f"Recipe '{title}' added successfully!")
 
-@click.command()
+@cli.command()
 @click.option('--recipe_id', prompt='Recipe ID to delete', help='ID of the recipe to delete')
 def delete_recipe(recipe_id):
     """Delete a recipe by its ID."""
@@ -78,9 +82,7 @@ def delete_recipe(recipe_id):
     
     session.close()
 
-    click.echo(f"Recipe deleted successfully!")
-
-@click.command()
+@cli.command()
 @click.option('--recipe_id', prompt='Recipe ID to edit', help='ID of the recipe to edit')
 @click.option('--title', prompt='New title (leave empty to keep current)', help='New title for the recipe')
 @click.option('--instructions', prompt='New instructions (leave empty to keep current)', help='New instructions for the recipe')
@@ -119,7 +121,7 @@ def edit_recipe(recipe_id, title, instructions, ingredients):
     
     click.echo(f"Recipe with ID {recipe_id} edited successfully!")
 
-#@click.command()
+@cli.command()
 @click.option('--query', prompt='Search query', help='Keyword to search for in recipe titles')
 def search_recipes(query):
     """Search for recipes by title."""
@@ -141,7 +143,7 @@ def search_recipes(query):
     
     session.close()
 
-@click.command()
+@cli.command()
 @click.option('--recipe_id', prompt='Recipe ID to view', help='ID of the recipe to view')
 def view_recipe(recipe_id):
     """View detailed information about a recipe by its ID."""
@@ -164,14 +166,7 @@ def view_recipe(recipe_id):
         for ingredient in recipe.ingredients:
             click.echo(f"- {ingredient.name}")
     
-    
     session.close()
 
-# Add the new command to the CLI interface
 if __name__ == '__main__':
-    add_recipe()
-    list_recipes()
-    delete_recipe()
-    edit_recipe()
-    search_recipes()
-    view_recipe()
+    cli()
