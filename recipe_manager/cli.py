@@ -77,8 +77,48 @@ def delete_recipe(recipe_id):
 
     click.echo(f"Recipe deleted successfully!")
 
+@click.command()
+@click.option('--recipe_id', prompt='Recipe ID to edit', help='ID of the recipe to edit')
+@click.option('--title', prompt='New title (leave empty to keep current)', help='New title for the recipe')
+@click.option('--instructions', prompt='New instructions (leave empty to keep current)', help='New instructions for the recipe')
+@click.option('--ingredients', prompt='New ingredients (comma-separated, leave empty to keep current)', help='New ingredients for the recipe')
+def edit_recipe(recipe_id, title, instructions, ingredients):
+    """Edit an existing recipe by its ID."""
+    session = Session()
+    
+    # Find the recipe by ID
+    recipe = session.query(Recipe).filter_by(id=recipe_id).first()
+    
+    if not recipe:
+        click.echo(f"No recipe found with ID {recipe_id}.")
+        session.close()
+        return
+    
+    if title:
+        recipe.title = title
+    if instructions:
+        recipe.instructions = instructions
+    
+    if ingredients:
+        # Split ingredients into a list
+        ingredient_list = [name.strip() for name in ingredients.split(',')]
+        
+        # Clear existing ingredients and add the new ones
+        recipe.ingredients.clear()
+        for ingredient_name in ingredient_list:
+            ingredient = session.query(Ingredient).filter_by(name=ingredient_name).first()
+            if not ingredient:
+                ingredient = Ingredient(name=ingredient_name)
+            recipe.ingredients.append(ingredient)
+    
+    session.commit()
+    session.close()
+    
+    click.echo(f"Recipe with ID {recipe_id} edited successfully!")
+
+# Add the new command to the CLI interface
 if __name__ == '__main__':
-    # Add the commands to the CLI interface
     add_recipe()
     list_recipes()
     delete_recipe()
+    edit_recipe()
