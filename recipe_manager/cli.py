@@ -41,6 +41,11 @@ def add_recipe(title, instructions, ingredients):
     # Split ingredients into a list
     ingredient_list = [name.strip() for name in ingredients.split(',')]
     
+    if not title or not instructions or not ingredient_list:
+        click.echo("Invalid input. Please provide a title, instructions, and ingredients.")
+        session.close()
+        return
+    
     # Create a new recipe and add it to the database
     new_recipe = Recipe(title=title, instructions=instructions)
     
@@ -54,7 +59,7 @@ def add_recipe(title, instructions, ingredients):
     session.add(new_recipe)
     session.commit()
     session.close()
-
+    
     click.echo(f"Recipe '{title}' added successfully!")
 
 @click.command()
@@ -124,8 +129,8 @@ def search_recipes(query):
     
     # Find recipes with titles matching the query
     recipes = session.query(Recipe).filter(
-        Recipe.title.ilike(f'%{query}%') |
-            
+        Recipe.title.ilike(f'%{query}%')).all()
+    
     if recipes:
         click.echo("Search results:")
         for recipe in recipes:
