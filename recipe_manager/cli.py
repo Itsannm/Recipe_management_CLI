@@ -3,9 +3,7 @@
 import click
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-# Import your SQLAlchemy models here
-from recipe_manager.models import User, Recipe, Ingredient
+from models import User, Recipe, Ingredient
 
 # Define your DATABASE_URL here
 DATABASE_URL = 'sqlite:///recipe_manager.db'

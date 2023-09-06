@@ -1,4 +1,3 @@
-#recipe_manager/models.py 
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship, declarative_base
 
@@ -24,6 +23,8 @@ class Recipe(Base):
     
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="recipes")
+    
+    ingredients = relationship("Ingredient", secondary="recipe_ingredients", back_populates="recipes")
 
 # Define the Ingredient model
 class Ingredient(Base):
@@ -31,6 +32,8 @@ class Ingredient(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
+    
+    recipes = relationship("Recipe", secondary="recipe_ingredients", back_populates="ingredients")
 
 # Define a many-to-many relationship table between recipes and ingredients
 recipe_ingredients = Table(
