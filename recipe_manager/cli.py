@@ -116,9 +116,36 @@ def edit_recipe(recipe_id, title, instructions, ingredients):
     
     click.echo(f"Recipe with ID {recipe_id} edited successfully!")
 
+#@click.command()
+@click.option('--query', prompt='Search query', help='Keyword to search for in recipe titles and tags')
+def search_recipes(query):
+    """Search for recipes by title and tags."""
+    session = Session()
+    
+    # Find recipes with titles or tags matching the query
+    recipes = session.query(Recipe).filter(
+        Recipe.title.ilike(f'%{query}%') |
+        Recipe.tags.any(Ingredient.name.ilike(f'%{query}%'))
+    ).all()
+    
+    if recipes:
+        click.echo("Search results:")
+        for recipe in recipes:
+            click.echo(f"Recipe ID: {recipe.id}")
+            click.echo(f"Title: {recipe.title}")
+            click.echo(f"Instructions: {recipe.instructions}")
+            if recipe.tags:
+                click.echo(f"Tags: {', '.join(tag.name for tag in recipe.tags)}")
+            click.echo('-' * 30)
+    else:
+        click.echo("No matching recipes found.")
+    
+    session.close()
+
 # Add the new command to the CLI interface
 if __name__ == '__main__':
     add_recipe()
     list_recipes()
     delete_recipe()
     edit_recipe()
+    search_recipes() 
