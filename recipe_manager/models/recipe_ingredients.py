@@ -1,7 +1,7 @@
 # my_app/my_app/models/recipe_ingredients.py
 
 from sqlalchemy import Column, Integer, ForeignKey, Table
-from base import Base
+from models.base import Base
 
 # Define the association table
 recipe_ingredients = Table(

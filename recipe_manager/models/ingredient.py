@@ -2,7 +2,7 @@
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from base import Base
+from models.base import Base
 
 # Define the Ingredient model
 class Ingredient(Base):
