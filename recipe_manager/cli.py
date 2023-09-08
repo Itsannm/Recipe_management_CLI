@@ -1,5 +1,3 @@
-# recipe_manager/cli.py
-
 import click
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
